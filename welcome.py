@@ -10,7 +10,6 @@ app = Flask(__name__)
 def welcome():
     return render_template('index.html')
 
-
 @app.route('/validatedb')
 def db_info():
     con = None
@@ -20,30 +19,14 @@ def db_info():
         db_handle = con.cursor()
         db_handle.execute('SELECT SQLITE_VERSION()')
         data = db_handle.fetchone()
-        print("SQLite version: {1}".format(data))
+        tpl_db_version = "SQLite version: {1}".format(str(data))
     except lite.Error as err:
-        print
-        "Error %s:" % err[0]
+        tpl_db_version = "Error %s:" % err
         sys.exit(1)
     finally:
         if con:
             con.close()
-
-"""
-@app.route('/myapp')
-def welcome_to_my_app():
-    return 'Welcome again to my app running on Bluemix!'
-
-
-@app.route('/api/people')
-def get_people():
-    list = [
-        {'name': 'John', 'age': 28},
-        {'name': 'Bill', 'val': 26}
-    ]
-    return jsonify(results=list)
-
-"""
+    return render_template('db_info.html', name=tpl_db_version)
 
 
 @app.route('/say/<name>')
